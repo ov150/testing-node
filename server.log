@@ -1,0 +1,7 @@
+2025-07-17T11:19:56.060Z - GET / - Status: 200
+2025-07-17T11:19:56.719Z - GET /favicon.ico - Status: 404
+2025-07-17T11:21:30.733Z - GET /view - Status: 200
+2025-07-17T11:21:57.484Z - GET / - Status: 200
+2025-07-17T11:23:35.244Z - GET / - Status: 200
+2025-07-17T11:24:29.370Z - GET / - Status: 200
+2025-07-17T11:24:41.418Z - GET /view?path=server.log - Status: 200
