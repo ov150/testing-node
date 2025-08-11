@@ -165,35 +165,35 @@
 
 
 
-const express = require("express");
-const app = express()
-const path = require("node:path")
+// const express = require("express");
+// const app = express()
+// const path = require("node:path")
 
-app.use(express.json())
+// app.use(express.json())
 
-const filePath = path.join(__dirname, 'view/index.html')
+// const filePath = path.join(__dirname, 'view/index.html')
 
-app.get("/", (req, res)=>{
-    res.sendFile(filePath)
-})
+// app.get("/", (req, res)=>{
+//     res.sendFile(filePath)
+// })
 
-let arr = [];
+// let arr = [];
 
-app.post("/", (req, res)=> {
-    console.log(req.query)
-    console.log(req.headers)
-    arr.push(req.body)
-    console.log(arr, "arr")
-    console.log(req.body)
-    res.end()
-})
+// app.post("/", (req, res)=> {
+//     console.log(req.query)
+//     console.log(req.headers)
+//     arr.push(req.body)
+//     console.log(arr, "arr")
+//     console.log(req.body)
+//     res.end()
+// })
 
-app.get("/tasks", (req, res)=>{
-    return res.json({"arr": arr});
-})
-app.listen(3000, ()=>{
-    console.log("Server is running at http://localhost:3000")
-})
+// app.get("/tasks", (req, res)=>{
+//     return res.json({"arr": arr});
+// })
+// app.listen(3000, ()=>{
+//     console.log("Server is running at http://localhost:3000")
+// })
 
 
 //tasks (html file) => (GET)
@@ -201,3 +201,171 @@ app.listen(3000, ()=>{
 
 // display html form (html file) (GET)
 // create task (POST)
+
+
+
+
+
+//user-information (username, email , password) => please fill all fields
+//is information empty or not empty => please fill correct information
+//validate the data lenght => name should be in 5 latter
+// check the user information in databse if yes: user already exists => already in DB
+//store the information in databse => register successfully
+
+
+//lib (databse)
+//model (schemas)
+//controller ()
+//router
+//middleware
+// app.use(express.raw({ type: "multipart/form-data", limit: "10mb" }));
+
+// import express from "express";
+// import { configDotenv } from "dotenv";
+// import connectDB from "./db.js";
+// import StudentModel from "./student.model.js";
+// import jwt from "jsonwebtoken"
+// configDotenv()
+// const app = express();
+// app.use(express.json())
+
+// connectDB()
+
+// app.post("/", async (req, res)=>{
+//     // console.log(req.files)
+//     const {firstname, lastname, email} = req.body;
+//     if(firstname === "" || lastname === "" || email === ""){
+//         console.log("all fields are require...")
+//     }
+//     console.log("before ")
+
+//     const dbUser = await StudentModel.findOne({email: email});
+//     if(dbUser){
+//         return res.json({"message": "user already exists"})
+//     }
+//     console.log(dbUser, "check")
+//     //  db.users.
+//     // console.log(req.body)
+//     const check =await StudentModel.create({firstname, lastname, email});
+//     const token = jwt.sign({userId: check._id}, process.env.JWT_SECRET_KEY, {'expiresIn':'1h'})
+//     console.log("error from db")
+//     console.log(check, "information from db")
+//     // res.end()
+//     return res.json({
+//         "message":"user register successfully",
+//         "user":check,
+//         "token":token
+//     })
+// })
+
+
+// app.get("/profile", async(req, res)=>{
+//     // console.log(req.header, "header");
+//     // console.log(req.headers.authorization, "token");
+
+//     const reqToken = req.headers.authorization;
+
+//     const tryCheck = reqToken.split(" ");
+
+//     const token = tryCheck[1]
+
+
+//     const verifyData = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+//     console.log(verifyData, "verify data")
+
+//     res.end()
+// })
+
+
+// import multer from "multer";
+// import path from "path";
+// import { fileURLToPath } from "url";
+// import { dirname } from "path";
+// import { v4 as uuidv4 } from "uuid"
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
+
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, 'uploads')
+//     },
+//     filename: function (req, file, cb) {
+//         const uuid = uuidv4();
+//         const ext = path.extname(file.originalname);
+//         const newFilename = `${uuid}${ext}`;
+//         cb(null, newFilename);
+//     }
+// })
+
+// const upload = multer({ storage: storage })
+
+
+// app.use(express.urlencoded({ extended: true }))
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+// app.post("/upload", upload.single('file'), async (req, res, next) => {
+//     // console.log(req.file)
+//     const fileUrl = `/uploads/${req.file.filename}`;
+//     console.log(fileUrl)
+//     res.send("File uploaded successfully!");
+// })
+
+// app.get('/', (req, res) => {
+//     res.send(`
+//     <form action="/upload" method="POST" enctype="multipart/form-data">
+//       <input type="file" name="file" />
+//       <button type="submit">Upload</button>
+//     </form>
+//   `);
+// });
+
+
+// app.listen(3000, () => {
+//     console.log("Server is running at http://localhost:3000")
+// })
+
+
+
+
+
+import express from "express";
+import multer from "multer";
+import path from "path"
+import { v4 as uuidv4 } from 'uuid';
+const app = express();
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, 'uploads/')
+    },
+    filename: function (req, file, cb){
+        // Screenshot from 2025-07-02 15-55-49.png 
+        const ext = path.extname(file.originalname);
+        const uuid = uuidv4();
+        console.log(ext, uuid)
+        const newFileName = `${uuid}${ext}`
+        console.log(newFileName)
+        cb(null, newFileName)
+    }
+})
+const upload = multer({storage: storage})
+
+app.use(express.urlencoded({extended: true}));
+
+
+
+// app.use(cors())
+app.post("/uploads", upload.single('file') ,(req, res)=>{
+    console.log(req.file)
+    console.log(req.files);
+
+    // const fileInfo = `/uploads/${file.originalname}`;
+    // console.log(fileInfo, "chcl")
+    const fileUrl = `/uploads/${req.file.filename}`;
+    console.log(fileUrl)
+    res.end()
+})
+
+app.listen(3000, ()=>{
+    console.log("server is running on http://localhost:3000")
+})
