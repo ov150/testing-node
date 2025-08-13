@@ -332,40 +332,39 @@ import express from "express";
 import multer from "multer";
 import path from "path"
 import { v4 as uuidv4 } from 'uuid';
+import {v2 as cloudinary} from "cloudinary";
+import { configDotenv } from "dotenv";
+import cors from "cors"
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+configDotenv();
 const app = express();
 
-const storage = multer.diskStorage({
-    destination: function(req, file, cb){
-        cb(null, 'uploads/')
-    },
-    filename: function (req, file, cb){
-        // Screenshot from 2025-07-02 15-55-49.png 
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret:process.env.CLOUDINARY_API_SECRET
+})
+
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: function (req, file){
         const ext = path.extname(file.originalname);
         const uuid = uuidv4();
-        console.log(ext, uuid)
         const newFileName = `${uuid}${ext}`
-        console.log(newFileName)
-        cb(null, newFileName)
+        return { newFileName }
     }
 })
+
+
 const upload = multer({storage: storage})
-
 app.use(express.urlencoded({extended: true}));
-
-
-
-// app.use(cors())
-app.post("/uploads", upload.single('file') ,(req, res)=>{
-    console.log(req.file)
-    console.log(req.files);
-
-    // const fileInfo = `/uploads/${file.originalname}`;
-    // console.log(fileInfo, "chcl")
-    const fileUrl = `/uploads/${req.file.filename}`;
-    console.log(fileUrl)
+app.use(cors())
+app.post("/uploads", upload.single('file') ,async (req, res)=>{
+    const imageUrl = req.file.path;
+    console.log(imageUrl)
     res.end()
 })
-
 app.listen(3000, ()=>{
     console.log("server is running on http://localhost:3000")
 })
