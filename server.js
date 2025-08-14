@@ -332,10 +332,12 @@ import express from "express";
 import multer from "multer";
 import path from "path"
 import { v4 as uuidv4 } from 'uuid';
-import {v2 as cloudinary} from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 import { configDotenv } from "dotenv";
 import cors from "cors"
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import nodemailer from "nodemailer";
+import { html, otp } from "./html-template.js";
 configDotenv();
 const app = express();
 
@@ -343,12 +345,36 @@ const app = express();
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret:process.env.CLOUDINARY_API_SECRET
+    api_secret: process.env.CLOUDINARY_API_SECRET
 })
+
+
+
+
+const transporter = nodemailer.createTransport({
+    host:"smtp.gmail.com",
+    port:587,
+    secure: false,
+    auth:{
+        user:"ov5010143@gmail.com",
+        pass:"mdth mofw cgst kvbg"
+    }
+})
+
+
+
+const mailOptions = {
+  from: "baghelvivek67@gmail.com",
+  to: "ov5010143@gmail.com",
+  subject: "Your OTP Code",
+  text: `Use this OTP to verify your email: ${otp}. It expires in 10 minutes.`, // plaintext fallback
+  html, // the HTML above
+};
+
 
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    params: function (req, file){
+    params: function (req, file) {
         const ext = path.extname(file.originalname);
         const uuid = uuidv4();
         const newFileName = `${uuid}${ext}`
@@ -357,14 +383,26 @@ const storage = new CloudinaryStorage({
 })
 
 
-const upload = multer({storage: storage})
-app.use(express.urlencoded({extended: true}));
+const upload = multer({ storage: storage })
+app.use(express.urlencoded({ extended: true }));
 app.use(cors())
-app.post("/uploads", upload.single('file') ,async (req, res)=>{
+
+app.get('/', async (req, res) => {
+    try {
+        const mailInfo = await transporter.sendMail(mailOptions);
+        console.log(mailInfo);
+    } catch (error) {
+        console.error('Error sending email:', error);
+    }
+
+    res.json({"message":"hello world"})
+})
+
+app.post("/uploads", upload.single('file'), async (req, res) => {
     const imageUrl = req.file.path;
     console.log(imageUrl)
     res.end()
 })
-app.listen(3000, ()=>{
+app.listen(3000, () => {
     console.log("server is running on http://localhost:3000")
 })
